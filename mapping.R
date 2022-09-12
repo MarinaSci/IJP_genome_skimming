@@ -168,7 +168,7 @@ http://bio-bwa.sourceforge.net/bwa.shtml#4
 #02.Remove unmapped reads ----
 #get rid of unmapped reads
 samtools view -q 30 -F 4 -S -h ${prefix}_${base}.sam > ${prefix}_${base}_onlymapped.sam
-
+#testing 
 
 #03.Filter reads by length ----
 samtools view -h ${prefix}_${base}_onlymapped.sam | awk 'length($10) > 130 || $1 ~ /^@/' > ${prefix}_${base}_onlymapped_filtered.sam
