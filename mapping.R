@@ -168,19 +168,11 @@ http://bio-bwa.sourceforge.net/bwa.shtml#4
 #02.Remove unmapped reads ----
 #get rid of unmapped reads
 samtools view -q 30 -F 4 -S -h ${prefix}_${base}.sam > ${prefix}_${base}_onlymapped.sam
-#testing 
+#add -h to leave the header there
 
-#03.Filter reads by length ----
-samtools view -h ${prefix}_${base}_onlymapped.sam | awk 'length($10) > 130 || $1 ~ /^@/' > ${prefix}_${base}_onlymapped_filtered.sam
-
-#samclip for CIGAR ----
-#Used conda to install samclip, that gets rid of super hard clipped alignments in a sam file... 
-conda install -c bioconda -c conda-forge samclip
-
-#04.Index FASTA for samclip ----
+#03.if not done so already, index the fasta to be used with samclip
 #samclip needs a ref file that has been indexed differently:
-samtools faidx human_mito_ref.fasta
-
+samtools faidx $reference
 
 #output of /fai file: 
 #NAME: name of ref 
@@ -189,11 +181,18 @@ samtools faidx human_mito_ref.fasta
 #LINEBASES: number of bases in each line
 #LINEWIDTH: in bytes
 
-  
-#run samclip 
+#04.Filter reads by length ----
+samtools view -h ${prefix}_${base}_onlymapped.sam | awk 'length($10) > 130 || $1 ~ /^@/' > ${prefix}_${base}_onlymapped_filtered.sam
+
+#samclip for CIGAR ----
+#Used conda to install samclip, that gets rid of super hard clipped alignments in a sam file... 
+conda install -c bioconda -c conda-forge samclip
+
+
+#05.samclip for hard clipiing
 samclip --ref ${reference}.fai ${prefix}_${base}_onlymapped_filtered.sam > ${prefix}_${base}_samclip.sam
 
-#05.SAM TO BAM ----
+#06.SAM TO BAM ----
 #convert
 samtools view -S -b ${prefix}_${base}_samclip.sam > ${prefix}_${base}.bam
 #sort
@@ -203,14 +202,22 @@ samtools sort -o ${prefix}_${base}_sorted.bam ${prefix}_${base}.bam
 sambamba view -t 12 -h -f bam -F "mapping_quality >= 1 and not (unmapped or secondary_alignment) and not ([XA] != null or [SA] != null)" ${prefix}_${base}_sorted.bam -o ${prefix}_${base}_uniq.bam
 
 #index the bam 
-samtools index ${prefix}_${base}_sorted.bam
+samtools index ${prefix}_${base}_uniq.bam
 
-#06.Calculate depth for coverage plots ----
+#07.STATS from bam
+samtools idxstats ${prefix}_${base}_uniq.bam > ${prefix}_${base}_uniq.txt
 
-#calculate depth per base
-samtools depth ${prefix}_${base}_sorted.bam > deduped_${prefix}_${base}.coverage
+#08.calculate depth per base
+samtools depth ${prefix}_${base}_uniq.bam > deduped_${prefix}_${base}.coverage
 
-#07.Visualise coverage (alternatively)
+#.coverage files can be used to extract species, e.g,Ascaris 
+
+awk '$1 == "NC_016198_Ascaris_lumbricoides_mitochondrion_complete_genome" {print $0}' deduped_TKU102.coverage > ascaris_${prefix}_${base}.coverage
+#take table .coverage and plot it in R
+
+------------------------------------
+
+#Visualise coverage (alternatively)
 samtools coverage -b .bam -m
 #bam required as a separate file/list, however it does not do per sample coverage, that's why I did the above 
 #-m will give you stdout 
