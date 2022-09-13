@@ -20,12 +20,12 @@ awk '$1 == "NC_016198_Ascaris_lumbricoides_mitochondrion_complete_genome" {print
 library(tidyverse)
 ---------------------------
 #TKU102 ----
-TKU102_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisTKU102.coverage",
+TKU102_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisTKU102.coverage",
                       header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-TKU102_ascaris <-rename(TKU102_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+TKU102_ascaris <- plyr::rename(TKU102_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
   
@@ -42,12 +42,12 @@ plot1 <- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par
   
 #NDK63-----  
 #trying to plot another BAM file and then put them in a single plot 
-NDK63_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisNDK63.coverage",
+NDK63_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisNDK63.coverage",
                              header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-NDK63_ascaris <- rename(NDK63_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+NDK63_ascaris <- plyr::rename(NDK63_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
@@ -61,17 +61,17 @@ plot2 <- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par
        data=NDK63_ascaris, main="depth by locus - Ascaris lumbricoides (NDK63)")
 
 ---------------------------
-#used to have T103
+#used to have ET018
 -----------------------------------------
 
 #ET103-----  
 #trying to plot another BAM file and then put them in a single plot 
-ET103_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisET103.coverage",
+ET103_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisET103.coverage",
                             header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-ET103_ascaris <- rename(ET103_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+ET103_ascaris <- plyr::rename(ET103_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
@@ -88,12 +88,12 @@ plot4 <- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par
 
 -----------------------------------------
 #NDK113 -----
-NDK113_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisNDK113.coverage",
+NDK113_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisNDK113.coverage",
                             header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-NDK113_ascaris <- rename(NDK113_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+NDK113_ascaris <- plyr::rename(NDK113_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
@@ -111,12 +111,12 @@ plot5 <- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par
 
 #NDK92 ----  
 
-NDK92_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisNDK92.coverage",
+NDK92_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisNDK92.coverage",
                                header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-NDK92_ascaris <- rename(NDK92_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+NDK92_ascaris <- plyr::rename(NDK92_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
@@ -132,12 +132,12 @@ plot6<- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par.
 -----------------------------------------  
 
 #TKU23----
-TKU23_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisTKU23.coverage",
+TKU23_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisTKU23.coverage",
                               header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-TKU23_ascaris  <- rename(TKU23_ascaris ,c(V1="reference", V2="locus", V3="depth")) # renames the header
+TKU23_ascaris  <- plyr::rename(TKU23_ascaris ,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
@@ -153,12 +153,12 @@ plot7<- xyplot(depth ~ locus, type="p", pch=20, auto.key=list(border=TRUE), par.
 ----------------------------------------    
 #TKU25 ----
 
-TKU25_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/02.Code/ascarisTKU25.coverage",
+TKU25_ascaris <- read.table("/Users/marinapapaiakovou/Documents/00.Cambridge_PhD/02.Science/02.Genome_skimming/2019_Metagenomics_NHM/IJP_genome_skimming/Data/ascarisTKU25.coverage",
                             header=FALSE, sep="\t", na.strings="NA", dec=".", strip.white=TRUE)
 
 library(reshape) # loads the library to rename the column names
 
-TKU25_ascaris <- rename(TKU25_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
+TKU25_ascaris <- plyr::rename(TKU25_ascaris,c(V1="reference", V2="locus", V3="depth")) # renames the header
 
 #Now, plot the coverage by depth:
 
