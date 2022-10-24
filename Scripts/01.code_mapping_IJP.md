@@ -1,0 +1,168 @@
+---
+title: "IJP_code"
+author: "Marina Papaiakovou"
+date: '2022-10-15'
+output: html_document
+---
+# Mapping of raw reads against helminth genomes 
+
+#These steps will guide you through mapping raw reads and filtering to generate basic mapping stats ready to be used in Rstudio 
+
+## Building reference databases  
+```bash
+#Building your references ---- 
+#making master fasta files 
+
+#Renaming the full genome contig files to #number_of_contig_species_name
+#did them individually 
+#make sure you are inside a conda -env that allows you to use fastaq 
+fastaq enumerate_names refence_file.fa reference_file_renamed.fa --suffix _speciesname
+
+#once you have renamed all the > contigs for all the files, put them into a master file 
+cat *_renamed.fa >> human_parasite_genomes.fasta 
+
+```
+
+## Mapping using BWA MEM
+```bash
+#SCRIPT for mass mapping of fq.gz files (R1+R2) against a reference ----
+-----------------------------------------------------------------
+#!/bin/env
+set -e #to hide any errors
+#where the fasta file is and index that
+reference=your_ref.fasta
+#set prefix
+prefix=project_name #or experiment name
+
+bwa index $reference
+
+for fq in *_1.fq.gz
+do
+      echo "working with $fq"
+      base=$(basename -a $fq | sed 's/_1.fq.gz//g')
+      echo ""
+      
+      echo "genome file is: $reference"
+      echo "base name is: $base"
+      
+      base_1=${base}_1.fq.gz
+      base_2=${base}_2.fq.gz
+      
+      echo "base_1 file is: $base_1"
+      echo "base_2 file is: $base_2"
+      
+      echo ""
+      echo "I will now run the following command:"
+      echo "bwa mem ${reference} ${base_1} ${base_2} > ${prefix}_${base}.sam"
+
+      bwa mem ${reference} <(zcat ${base_1}) <(zcat ${base_2}) > ${prefix}_${base}.sam #align
+
+samtools view -q 30 -F 4 -S -h ${prefix}_${base}.sam > ${prefix}_${base}_onlymapped.sam #remove unmapped reads
+#add -h to leave the header there
+
+#index the fasta to be used with samclip; samclip needs a ref file that has been indexed differently:
+samtools faidx $reference
+
+#output of .fai file: 
+#NAME: name of ref 
+#LENGTH: length of seq in bases
+#OFFSET: offset within the FASTA file of this sequence first base
+#LINEBASES: number of bases in each line
+#LINEWIDTH: in bytes
+
+#Filtering steps for sam and bam files ----   ----
+samtools view -h ${prefix}_${base}_onlymapped.sam | awk 'length($10) > 130 || $1 ~ /^@/' > ${prefix}_${base}_onlymapped_filtered.sam
+
+#Further filtering and samclip for CIGAR
+#Used conda to install samclip, that gets rid of super hard clipped alignments in a sam file... 
+conda install -c bioconda -c conda-forge samclip
+
+#samclip for hard clipping
+samclip --ref ${reference}.fai ${prefix}_${base}_onlymapped_filtered.sam > ${prefix}_${base}_samclip.sam
+
+#covert SAM TO BAM 
+samtools view -S -b ${prefix}_${base}_samclip.sam > ${prefix}_${base}.bam
+#sort
+samtools sort -o ${prefix}_${base}_sorted.bam ${prefix}_${base}.bam
+
+#remove duplicates
+sambamba view -t 12 -h -f bam -F "mapping_quality >= 1 and not (unmapped or secondary_alignment) and not ([XA] != null or [SA] != null)" ${prefix}_${base}_sorted.bam -o ${prefix}_${base}_uniq.bam
+
+#index the bam 
+samtools index ${prefix}_${base}_uniq.bam
+
+#calculate depth per base
+samtools depth ${prefix}_${base}_uniq.bam > deduped_${prefix}_${base}.coverage
+
+#coverage files can be used to extract species, e.g,Ascaris 
+#did this for ALL samples that showed high Ascaris coverage 
+awk '$1 == "NC_016198_Ascaris_lumbricoides_mitochondrion_complete_genome" {print $0}' deduped_TKU102.coverage > ascaris_${prefix}_${base}.coverage
+#take table .coverage and plot it in R
+
+```
+
+## Multicov stats 
+```bash
+#Generate coverage/map files to use with R ----
+#Multicov coverage plots for all samples, for all genomes mapped
+#Make bed file per genome used
+#FASTA.FAI to BED FILE 
+awk 'BEGIN {FS="\t"}; {print $1 FS "0" FS $2}' yourfile.fasta.fai > yourfile.bed
+
+#if you run the wild card, then the bam files should have been taken alphabetically by the software 
+#to verify 
+ls -1 *_uniq.bam
+
+#BEDTOOLS MULTICOV for bam stats 
+bedtools multicov -bams bam1 bam2 bam3 -bed reference.bed > yourfile_stats.txt
+bedtools multicov -bams *_uniq.bam -bed YOURFILE.bed > YOURFILE_stats.txt
+#do the same for both livestock and human, both nuclear and mitogenome 
+
+
+#Whole genome mapping and livestock mapping handling
+
+#Housekeeping and getting genome/species specific map results ----
+#ISOLATE CONTIGS FOR ALL SPECIES IN A MULTIREFERENCE FILE, AND KEEP COLUMN 1 AND 2
+#livestock example
+cut -f 1 livestock_parasite_full_genomes.fasta.fai | cut -f 2 -d "_" | sort | uniq | while read CHR; do grep $CHR livestock_parasite_full_genomes.fasta.fai | cut -f 1-2 > ${CHR}_genome; done
+
+#isolate per-genome bed files - human 
+cut -f 1 hum_parasite_full_genomes.fasta.fai | cut -f 2 -d "_" | sort | uniq | while read CHR; do grep $CHR hum_parasite_full_genomes.fasta.fai | cut -f 1-2 > ${CHR}_genome; done
+#genomes with same genus name will end up in the same file. 
+
+#ceylanicum and duodenale ended up togerher... 
+cut -f 1 ancylostoma_genome | cut -d'_' -f3 | sort | uniq | while read CHR; do grep $CHR ancylostoma_genome | cut -f 1-2 > ${CHR}_genome; done
+
+#remove the .fa from the end of every line in column 1 
+cat filename.fasta | sed 's/.fa//' > copy_edited
+
+#BEDTOOLS makewindows 
+#from individual bed files, species-specific genomes from fasta.fai so I can do the multi cov 
+bedtools makewindows -g parasite_genome -w 10000 > parasite_genome_10kb.bed
+
+#BEDTOOLS makewindows, in a loop 
+for i in *_genome; do bedtools makewindows -g $i -w 10000 > ${i}_10kb.bed; done
+
+#BEDTOOLS multicov 
+#per individual species genome, do multicov for all samples.... 
+bedtools multicov -bed duodenale_genome_10kb.bed -bams *_uniq.bam > duodenale_all_stats
+
+#loop bedtools multicov 
+for i in *_10kb.bed; do bedtools multicov -bed $i -bams *_uniq.bam > ${i}_all_stats; done
+#finished for livestock too
+
+#_all_stats file can now be used for plotting in R 
+
+````
+#YOU NEED DIFFERENT NORMALISATION FOR 10KB WINDOWS VS MITOGENOMES 
+
+#Normalising mitogenomes ----
+(reads mapped/total reads) * 1000000
+
+#Normalising 10KB nuclear genome mapping ----
+[(reads mapped * number of windows)/total n of reads]* 1000000
+
+#Normalise also by genome size 
+the above number/Mb 
+````
+
