@@ -6,7 +6,8 @@ output: html_document
 ---
 
 
-## ITS2 analysis
+## ITS2 analysis 
+#formatting of raw files and pulling ITS2 database
 ```{r, eval=FALSE}
 # Genome skimming: code for normalisation of read data
 
@@ -41,6 +42,7 @@ cat reference.fasta | sed '/Marshallagia/,+1d' >  reference.curated.fasta
 #simple script to run each sample against ITS2 database using Vsearch.
 #Requires changing the sample name and read files
 ```
+##Vsearch for ITS2 mapping 
 
 ```{r, eval=FALSE}
 
@@ -89,7 +91,7 @@ bsub.py 10 --threads 10 vsearch_${sample_name} \
 
 ```
 
-## human and livestock mitochondrial DNA analysis
+## Human and livestock mitochondrial DNA analysis
 ```{r, eval=FALSE}
 #R studio
 # load libraries
@@ -168,7 +170,7 @@ ggsave("figure2_mitochondrial_genome_normalised_cov.pdf", width=250, height=100,
 ```
 
 
-## Human whole genome analyses
+## Human whole genome analysis
 ```{r, eval=FALSE}
 # read in the raw data per species, adding the species name as a new column
 ascaris <- read.table("human_wholegenome/ascaris_genome_10kb.bed_all_stats", header=F)
@@ -240,8 +242,7 @@ ggsave("figure3_human_genome_normalised_cov.pdf", width=170, height=170, units="
 ```
 
 
-## livestock whole genome analysis
-
+## Livestock whole genome analysis
 
 ```{r, eval=FALSE}
 #Rstudio
@@ -332,7 +333,7 @@ ggsave("supfigure_livestock_genome_normalised_cov.pdf", width=170, height=170, u
 ```
 
 
-## Testing Enterobious contamination
+## Testing Enterobius contamination
 - we found that small contigs contained higher coverage, and when blasted, presented as bacterial hits
 - was to see if the true signal improves when removing contigs smaller than 10kb
 - aim is to compare data before and after filtering
@@ -398,7 +399,8 @@ ggsave("SupplementaryFigure_enteriobius.pdf", width=170, height=100, units="mm")
 
 ```
 
-#Diagnostics comparison plot 
+##Diagnostics comparison plot 
+Comparison between genome skimming and PCR plot, using 'pie charts' per sample, per helminth  tested
 ```{r}
 ggplot(data, aes(x="", y="", group=dx, colour=dx, fill=dx, alpha=dx_result)) +
   geom_bar(width = 1, stat = "identity") +
