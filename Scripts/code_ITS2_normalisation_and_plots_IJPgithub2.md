@@ -42,7 +42,11 @@ cat reference.fasta | sed '/Marshallagia/,+1d' >  reference.curated.fasta
 #simple script to run each sample against ITS2 database using Vsearch.
 #Requires changing the sample name and read files
 ```
+
+```bash
 ##Vsearch for ITS2 mapping 
+```
+
 
 ```{r, eval=FALSE}
 
