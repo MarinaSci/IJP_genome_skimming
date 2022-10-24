@@ -5,20 +5,18 @@ date: '2022-10-24'
 output: html_document
 ---
 
-#test test 
+
+## ITS2 analysis
 ```{r, eval=FALSE}
 # Genome skimming: code for normalisation of read data
 
-## ITS2 analysis
+
 - Downloaded complete ITS2 database from https://www.nemabiome.ca/its2-database.html on 5th Oct 2022
 - Generated a file called "dada2.fasta" containing 11763 sequences
 - there are many different species, but lots of duplication of some species.
 - want to deduplicate this data so there is once representative sequence per species.
 - difficult to know how to do this properly, ie, what is the "best/most representative" sequence? Decided to keep it simply and just choose the first sequence per species
 ```
-
-## R Markdown
-
 
 ```{r, eval=FALSE}
 # counting unique sequence names
@@ -39,9 +37,9 @@ cat reference.fasta | sed '/Marshallagia/,+1d' >  reference.curated.fasta
 
 ```
 
-- simple script to run each sample against IST2 database using Vsearch.
-- Requires changing the sample name and read files
-
+```bash
+#simple script to run each sample against ITS2 database using Vsearch.
+#Requires changing the sample name and read files
 ```
 
 ```{r, eval=FALSE}
@@ -91,8 +89,6 @@ bsub.py 10 --threads 10 vsearch_${sample_name} \
 
 ```
 
-
-```
 ## human and livestock mitochondrial DNA analysis
 ```{r, eval=FALSE}
 #R studio
@@ -135,7 +131,7 @@ plot_hum_mito <- ggplot(hum_mito_data, aes(sample_id, species, fill=normalised))
 
 plot_hum_mito
 
-# Livestock mitochondrial DNA analysis
+## Livestock mitochondrial DNA analysis
 
 liv_mito_raw_counts <- read.table("livestock_mito_rawcounts.txt", sep="\t", header=F)
 colnames(liv_mito_raw_counts) <- c("species", "start_pos", "genome_size_bp", "L1B", "L2B", "L3B")
@@ -336,7 +332,7 @@ ggsave("supfigure_livestock_genome_normalised_cov.pdf", width=170, height=170, u
 ```
 
 
-## testing Enterobious contamination
+## Testing Enterobious contamination
 - we found that small contigs contained higher coverage, and when blasted, presented as bacterial hits
 - was to see if the true signal improves when removing contigs smaller than 10kb
 - aim is to compare data before and after filtering
@@ -402,9 +398,8 @@ ggsave("SupplementaryFigure_enteriobius.pdf", width=170, height=100, units="mm")
 
 ```
 
-```{r, eval=FALSE}
-
 #Diagnostics comparison plot 
+```{r}
 ggplot(data, aes(x="", y="", group=dx, colour=dx, fill=dx, alpha=dx_result)) +
   geom_bar(width = 1, stat = "identity") +
   coord_polar("y") +
