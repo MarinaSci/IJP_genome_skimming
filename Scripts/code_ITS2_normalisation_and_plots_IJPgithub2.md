@@ -7,7 +7,7 @@ output: html_document
 
 
 ## ITS2 analysis 
-#formatting of raw files and pulling ITS2 database
+# Formatting of raw files and pulling ITS2 database
 ```{r, eval=FALSE}
 # Genome skimming: code for normalisation of read data
 
@@ -43,9 +43,9 @@ cat reference.fasta | sed '/Marshallagia/,+1d' >  reference.curated.fasta
 #Requires changing the sample name and read files
 ```
 
-```bash
-##Vsearch for ITS2 mapping 
-```
+
+# Vsearch for ITS2 mapping 
+
 
 
 ```{r, eval=FALSE}
@@ -337,7 +337,7 @@ ggsave("supfigure_livestock_genome_normalised_cov.pdf", width=170, height=170, u
 ```
 
 
-## Testing Enterobius contamination
+# Testing Enterobius contamination
 - we found that small contigs contained higher coverage, and when blasted, presented as bacterial hits
 - was to see if the true signal improves when removing contigs smaller than 10kb
 - aim is to compare data before and after filtering
@@ -403,7 +403,7 @@ ggsave("SupplementaryFigure_enteriobius.pdf", width=170, height=100, units="mm")
 
 ```
 
-##Diagnostics comparison plot 
+# Diagnostics comparison plot 
 Comparison between genome skimming and PCR plot, using 'pie charts' per sample, per helminth  tested
 ```{r}
 ggplot(data, aes(x="", y="", group=dx, colour=dx, fill=dx, alpha=dx_result)) +
