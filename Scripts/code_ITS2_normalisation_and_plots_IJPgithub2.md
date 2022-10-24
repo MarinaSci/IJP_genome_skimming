@@ -6,8 +6,8 @@ output: html_document
 ---
 
 
-## ITS2 analysis 
-# Formatting of raw files and pulling ITS2 database
+# ITS2 analysis 
+## Formatting of raw files and pulling ITS2 database
 ```{r, eval=FALSE}
 # Genome skimming: code for normalisation of read data
 
