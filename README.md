@@ -17,4 +17,4 @@ Marina Papaiakovou, Natalia Fraija-Fernández, Katherine James, Andrew G. Brisco
 Marina Papaiakovou: first author 
 DTJ Littlewood: corresponding author
 
-# Any reuse of data or code is encouraged with due acknowledgement, either via citation of the published manuscript (when available) and/or GitHub repository. Comments, suggestions, and discussion are welcome.
+Any reuse of data or code is encouraged with due acknowledgement, either via citation of the published manuscript (when available) and/or GitHub repository. Comments, suggestions, and discussion are welcome.
